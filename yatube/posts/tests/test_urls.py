@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from posts.models import Post, Group
 from http import HTTPStatus
 from django.urls import reverse
+from django.core.cache import cache
 
 User = get_user_model()
 
@@ -23,6 +24,7 @@ class StaticURLTests(TestCase):
         )
 
     def setUp(self):
+        cache.clear()
         self.guest_client = Client()
         self.userx = User.objects.create_user(username='HasNoName')
         self.authorized_client = Client()

@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
 from posts.models import Post, Group, Follow
+from django.core.cache import cache
 
 NUMBERS_OF_POSTS = 13
 User = get_user_model()
@@ -24,6 +25,7 @@ class PostModelTest(TestCase):
         )
 
     def setUp(self):
+        cache.clear()
         self.authorized_client = Client()
         self.authorized_client.login(username='auth', password='1234')
 
