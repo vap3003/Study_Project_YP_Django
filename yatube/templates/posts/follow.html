@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% load thumbnail %}
+
+{% load cache %}
+
+{% block title%} 
+  <title>Это главная страница проекта Yatube</title>
+{% endblock%}
+
+{% cache 20 index_page %}
+{% block content%}
+  <main> 
+    <div class="container py-5">     
+      <h1>Лента на основе ваших подписок</h1>
+      <article>
+        {% include 'posts/includes/switcher.html' %}
+        {% for post in page_obj %}
+          <ul>
+          <li>
+            Автор: {{ post.author.get_full_name }}
+          </li>
+          <li>
+            Дата публикации: {{ post.pub_date|date:"d E Y" }}
+          </li>
+          </ul>
+          {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+            <img class="card-img my-2" src="{{ im.url }}">
+          {% endthumbnail %}
+          <p>{{ post.text }}</p>
+          <a href="{% url 'post:post_detail' post.id %}">подробная информация</a>
+          <br>
+          {% if post.group %}
+            <a href="{% url 'post:groups' post.group.slug %}">Смотреть все записи сообщества {{ post.group.title }}</a>
+          {% endif %} 
+          {% if not forloop.last %}<hr>{% endif %}
+        {% endfor %}
+      </article>
+      {% include 'posts/includes/paginator.html' %}
+    </div>  
+  </main>
+{% endblock%}
+{% endcache %}
