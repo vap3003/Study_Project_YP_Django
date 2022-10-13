@@ -36,7 +36,10 @@ class PostModelTest(TestCase):
             reverse('posts:groups', kwargs={'slug': self.group.slug}): (
                 'posts/group_list.html'
             ),
-            reverse('posts:profile', kwargs={'username': self.user.username}): (
+            reverse(
+                'posts:profile',
+                kwargs={'username': self.user.username}
+            ): (
                 'posts/profile.html'
             ),
             reverse(
@@ -68,7 +71,10 @@ class PostModelTest(TestCase):
         response = self.authorized_client.get(reverse('posts:main'))
         first_object = response.context['page_obj'][0]
         self.assertEqual(first_object.text, self.post.text)
-        self.assertEqual(first_object.author.username, self.post.author.username)
+        self.assertEqual(
+            first_object.author.username,
+            self.post.author.username
+        )
         self.assertIsNone(first_object.group)
 
     def test_create_new_post(self):
@@ -103,7 +109,10 @@ class PostModelTest(TestCase):
                 kwargs={'username': self.author.username}
             )
         )
-        self.assertEqual(self.author.following.filter(user=self.user).exists(), True)
+        self.assertEqual(
+            self.author.following.filter(user=self.user).exists(),
+            True
+        )
 
     def test_following_posts(self):
         """Пользователь видит пост автора, на которого подписан
@@ -155,7 +164,10 @@ class PostModelTest(TestCase):
                 kwargs={'username': self.author.username}
             )
         )
-        self.assertEqual(self.author.following.filter(user=self.user).exists(), False)
+        self.assertEqual(
+            self.author.following.filter(user=self.user).exists(),
+            False
+        )
 
 
 class PaginatorViewsTest(TestCase):
