@@ -12,7 +12,7 @@
         <div class="mb-5">      
           <h1>Все посты пользователя {{ author.get_full_name }} </h1>
           <h3>Всего постов: {{ author.posts.count }} </h3>
-          {% if not no_subscription %}
+          {% if request.user.is_authenticated and request.user != author %}
             {% if following %}
               <a
                 class="btn btn-lg btn-light"

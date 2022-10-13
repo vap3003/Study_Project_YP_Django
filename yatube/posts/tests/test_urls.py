@@ -77,8 +77,8 @@ class StaticURLTests(TestCase):
         """URL-адрес использует соответствующий шаблон."""
         templates_url_names = {
             'posts/index.html': '/',
-            'posts/group_list.html': '/group/test_slug/',
-            'posts/profile.html': '/profile/auth/',
+            'posts/group_list.html': f'/group/{self.group.slug}/',
+            'posts/profile.html': f'/profile/{self.user.username}/',
             'posts/post_detail.html': f'/posts/{self.post.id}/',
         }
         for template, address in templates_url_names.items():

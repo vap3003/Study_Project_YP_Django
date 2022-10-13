@@ -45,29 +45,25 @@ def profile(request, username):
     author = get_object_or_404(User, username=username)
     post_list = author.posts.all()
     page_obj = paginator(request, post_list)
+    following = request.user.is_authenticated and Follow.objects.filter(
+        user=request.user, author=author
+    ).exists()
     context = {
         'author': author,
         'page_obj': page_obj,
+        'following': following,
     }
-    if request.user.is_authenticated:
-        following = author.following.filter(user=request.user).exists()
-        no_subscription = author == request.user
-        context['following'] = following
-    else:
-        no_subscription = True
-    context['no_subscription'] = no_subscription
     return render(request, template, context)
 
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     form = CommentForm(request.POST or None)
-    if request.method == 'POST':
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.author = request.user
-            comment.save()
-            return redirect('posts:post_edit', post_id=post_id)
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.author = request.user
+        comment.save()
+        return redirect('posts:post_edit', post_id=post_id)
     comment_list = post.comments.all()
     context = {
         'post': post,
@@ -104,7 +100,7 @@ def post_edit(request, post_id):
         if form.is_valid():
             form.save()
             return redirect('posts:post_detail', post.id)
-    else:
+    if request.user != post.author:
         return redirect('posts:post_detail', post.id)
     context = {
         'form': form,
@@ -144,9 +140,11 @@ def follow_index(request):
 def profile_follow(request, username):
     author = get_object_or_404(User, username=username)
     user = request.user
-    if author != user and not author.following.filter(user=user).exists():
-        subscription = Follow(user=user, author=author)
-        subscription.save()
+    if author != user:
+        Follow.objects.get_or_create(user=user, author=author)
+    # if author != user and not author.following.filter(user=user).exists():
+    #     subscription = Follow(user=user, author=author)
+    #     subscription.save()
     return redirect('posts:profile', username=username)
 
 

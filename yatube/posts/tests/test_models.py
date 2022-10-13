@@ -24,14 +24,12 @@ class PostModelTest(TestCase):
     def test_models_have_correct_object_names_post(self):
         """Проверяем, что у моделей корректно работает __str__."""
         post = PostModelTest.post
-        expected_object_name = post.text[:15]
-        self.assertEqual(str(post), expected_object_name)
+        self.assertEqual(str(post), post.text[:15])
 
     def test_models_have_correct_object_names_group(self):
         """Проверяем, что у моделей корректно работает __str__."""
         group = PostModelTest.group
-        expected_object_name = group.title
-        self.assertEqual(str(group), expected_object_name)
+        self.assertEqual(str(group), group.title)
 
     def test_verbose_name_post(self):
         """verbose_name в полях совпадает с ожидаемым."""

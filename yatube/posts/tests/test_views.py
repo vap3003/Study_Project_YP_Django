@@ -33,10 +33,10 @@ class PostModelTest(TestCase):
         """URL-адрес использует соответствующий шаблон"""
         templates_pages_names = {
             reverse('posts:main'): 'posts/index.html',
-            reverse('posts:groups', kwargs={'slug': 'test_slug'}): (
+            reverse('posts:groups', kwargs={'slug': self.group.slug}): (
                 'posts/group_list.html'
             ),
-            reverse('posts:profile', kwargs={'username': 'auth'}): (
+            reverse('posts:profile', kwargs={'username': self.user.username}): (
                 'posts/profile.html'
             ),
             reverse(
@@ -67,13 +67,9 @@ class PostModelTest(TestCase):
         """Шаблон home сформирован с правильным контекстом."""
         response = self.authorized_client.get(reverse('posts:main'))
         first_object = response.context['page_obj'][0]
-        post_text_0 = first_object.text
-        post_author_0 = first_object.author.username
-        post_group_0 = first_object.group
-
-        self.assertEqual(post_text_0, 'Тестовый пост')
-        self.assertEqual(post_author_0, 'auth')
-        self.assertIsNone(post_group_0)
+        self.assertEqual(first_object.text, self.post.text)
+        self.assertEqual(first_object.author.username, self.post.author.username)
+        self.assertIsNone(first_object.group)
 
     def test_create_new_post(self):
         """Проверка, что при создании поста с указанием группы
@@ -107,8 +103,7 @@ class PostModelTest(TestCase):
                 kwargs={'username': self.author.username}
             )
         )
-        following = self.author.following.filter(user=self.user).exists()
-        self.assertEqual(following, True)
+        self.assertEqual(self.author.following.filter(user=self.user).exists(), True)
 
     def test_following_posts(self):
         """Пользователь видит пост автора, на которого подписан
@@ -160,8 +155,7 @@ class PostModelTest(TestCase):
                 kwargs={'username': self.author.username}
             )
         )
-        following = self.author.following.filter(user=self.user).exists()
-        self.assertEqual(following, False)
+        self.assertEqual(self.author.following.filter(user=self.user).exists(), False)
 
 
 class PaginatorViewsTest(TestCase):
